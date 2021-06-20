@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from flask_sqlalchemy import model
 from app import db_manager as db
 
 from app.database.models.v1.base import model_dict
