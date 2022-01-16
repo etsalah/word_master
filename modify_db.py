@@ -1,3 +1,3 @@
 from app import app
 
-from app.database.models.v1.word import Word
+from app.v1.database.models.word import Word

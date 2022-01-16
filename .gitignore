@@ -3,3 +3,5 @@
 .vscode
 *pycache*
 sample.py
+app.db
+app.db-journal
