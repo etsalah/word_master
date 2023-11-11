@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from app.v1.database.models.word import Word
 from app.v1.helpers.id_helpers import generate_id
 from app import db_manager as db
+from app import app
 
 from app.v1.helpers import query_helpers
 
@@ -33,19 +34,21 @@ def process_words(words):
 
 def save_words(word_details: Dict):
     word_id = word_details['word_id']
-    try:
-        word_obj = Word(
-            id=word_id, word=word_details['word'], 
-            length=word_details['length']
-        )
-        db.session.add(word_obj)
-        db.session.commit()
-    except IntegrityError:
-        found_obj = query_helpers.find_by_params(
-            db.session, Word, [{'word': {'$eq': word_details['word']}}])
+    with app.app_context():
+        try:
+            word_obj = Word(
+                id=word_id, word=word_details['word'], 
+                length=word_details['length']
+            )
+            db.session.add(word_obj)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            found_obj = query_helpers.find_by_params(
+                db.session, Word, [{'word': {'$eq': word_details['word']}}])
         
-        if found_obj:
-            word_id = found_obj.id
+            if found_obj:
+                word_id = found_obj.id
 
     return word_id
 
