@@ -1,21 +1,17 @@
-import sys
-import sys
-import os
-import werkzeug
-from flask import Flask, request, jsonify, session
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
-from dateutil import parser
+from app import setup
 
-sys.path.insert(0, os.path.abspath('.'))
+APP_SETTINGS = setup.create_app()
 
-BASE_DIR = os.path.abspath('.')
+app = APP_SETTINGS['app']
+db_manager = APP_SETTINGS['db_manager']
+migrate = APP_SETTINGS['migrate']
 
-app = Flask(__name__, template_folder="templates")
+from app.v1.routes.words import bp as word_v1_bp
+from app.v1.routes.dashboard import bp as dashboard_v1_bp
 
-from config import Config
-
-app.config.from_object(Config)
-db_manager = SQLAlchemy(app)
-migrate = Migrate(app, db_manager)
+blueprint_mappings = (
+    (word_v1_bp, '/word'),
+    (dashboard_v1_bp, '/'),
+)
+setup.register_blueprints(app, blueprint_mappings)
