@@ -1,0 +1,53 @@
+{% extends('partials/base.html') %}
+
+{% block content %}
+
+<div class="container-fluid px-4">
+  <h1 class="mt-4">Tags</h1>
+  <ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Tags</li>
+  </ol>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="col-1 offset-11 justify-content-end">
+        <a href="{{ url_for('tag_v1.create_tag') }}" class="btn btn-primary" role="button">Create</a>
+        <!-- <button class="btn btn-primary">Create</button> -->
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div>&nbsp;</div>
+  </div>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="card col-sm-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>Tag List
+        </div>
+        <div class="card-body">
+          <table class="table table-hover table-bordered table-condensed">
+            <thead>
+              <th>Tag</th>
+              <th>Operation</th>
+            </thead>
+            <tbody>
+              {% for tag in tag_list %}
+              <tr>
+                <td>{{tag.tag}}</td>
+                <td>
+                  <div class="btn-group">
+                    <a href="{{ url_for('tag_v1.edit_tag', tag_id=tag.tag_id) }}" class="btn btn-danger btn-sm">Edit</a>
+                    <a href="{{ url_for('tag_v1.view_tag', tag_id=tag.tag_id) }}" class="btn btn-primary btn-sm">View</a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

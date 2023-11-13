@@ -14,13 +14,15 @@ class WordTag(db.Model):
         db.ForeignKeyConstraint(
             ["word_id", ], ["word.id", ], name="fk_word_tag_word_indx"),
     )
+    __mapper_args__ = {"version_id_col": "ver_id"}
     id = db.Column(db.String(50), primary_key=True)
     tag_id = db.Column(db.String(50), nullable=False, index=True)
     word_id = db.Column(db.String(50), nullable=False, index=True)
+    ver_id = db.Column(db.Integer(), nullable=True)
     date_created = db.Column(
         db.DateTime(), index=True, nullable=False, default=datetime.utcnow)
 
-    COLUMNS = ('id', 'tag_id', 'word_id', 'date_created')
+    COLUMNS = ('id', 'tag_id', 'word_id', 'date_created', 'ver_id')
 
 
     def to_dict(self):

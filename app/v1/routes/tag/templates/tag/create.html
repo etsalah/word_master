@@ -1,0 +1,47 @@
+{% extends('partials/base.html') %}
+
+{% block content %}
+
+<div class="container-fluid px-4">
+  <h1 class="mt-4">Tags</h1>
+  <ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Tags</li>
+  </ol>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="col-1 offset-11 justify-content-end">
+        <a href="{{ url_for('tag_v1.tag') }}" class="btn btn-md btn-danger">Back</a>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div>&nbsp;</div>
+  </div>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="card col-4">
+        <div class="card-header">
+          <!-- <i class="fas fa-table me-1"></i>Tag List -->
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('tag_v1.create_tag') }}" method="POST">
+            {{ form.csrf_token }}
+            <div class="row">
+              <label for="tag" class="col-form-label text-end col-sm-2">Name</label>
+              <div class="col-sm-10">
+                <input type="text" name="tag" id="tag" class="form-control" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-2 offset-10 p-3">
+                <button type="submit" class="btn btn-danger btn-sm">Save</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
