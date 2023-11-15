@@ -59,10 +59,24 @@ def edit_tag(tag_id):
     if request.method == "GET":
         return render_template("tag/edit.html", form=EditForm, tag_obj=tag_obj)
     elif request.method == "POST" and form.validate_on_submit():
-        return redirect(url_for("tag_v1.edit_tag"))
+        tag_obj.tag = str(form.tag.data).strip()
+        db.session.add(tag_obj)
+        try:
+            db.session.commit()
+            flash("The tag has been update. Successfully", category="success")
+            return redirect(url_for("tag_v1.edit_tag"))
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(e)
+            flash(
+                "An error occurred whilst trying to update the tag. "
+                "Try again later", category="error")
+            return redirect(url_for("tag_v1.edit_tag", tag_id=tag_id))
     elif request.method == "POST" and not form.validate_on_submit():
-        flash("\n".join(form.errors), category="error")
-        return redirect(url_for("tag_v1.edit_tag"))
+        msg = "\n".join(form.errors)
+        current_app.logger.error(msg)
+        flash(msg, category="error")
+        return redirect(url_for("tag_v1.edit_tag", tag_id=tag_id))
 
     flash(
         f"`{request.method}` request aren't currently supported",

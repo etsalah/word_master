@@ -24,17 +24,17 @@
           <!-- <i class="fas fa-table me-1"></i>Tag List -->
         </div>
         <div class="card-body">
-          <form action="{{ url_for('tag_v1.create_tag', tag_id=tag_obj.tag_id) }}" method="POST">
+          <form action="{{ url_for('tag_v1.edit_tag', tag_id=tag_obj.tag_id) }}" method="POST">
             {{ form.csrf_token }}
             <div class="row">
               <label for="tag" class="col-form-label text-end col-sm-2">Name</label>
               <div class="col-sm-10">
-                <input type="text" name="tag" id="tag" class="form-control" />
+                <input type="text" name="tag" id="tag" class="form-control" value="{{tag_obj.tag}}" />
               </div>
             </div>
             <div class="row">
               <div class="col-sm-2 offset-10 p-3">
-                <button type="submit" class="btn btn-danger btn-sm">Save</button>
+                <button type="submit" class="btn btn-danger btn-sm">Update</button>
               </div>
             </div>
           </form>
