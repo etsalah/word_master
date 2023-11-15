@@ -8,6 +8,9 @@
     <li class="breadcrumb-item active">Tags</li>
   </ol>
   <div class="row">
+    {% include('partials/flash_message.html') %}
+  </div>
+  <div class="row">
     <div class="container-fluid px-4">
       <div class="col-1 offset-11 justify-content-end">
         <a href="{{ url_for('tag_v1.tag') }}" class="btn btn-md btn-danger">Back</a>
