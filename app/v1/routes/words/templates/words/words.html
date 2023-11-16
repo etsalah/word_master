@@ -1,0 +1,81 @@
+{% extends('partials/base.html') %}
+{% import 'words/partials/pagination.html' as pagination_ctrl %}
+
+{% block content %}
+
+<div class="container-fluid px-4">
+  <h1 class="mt-4">Words</h1>
+  <ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Words</li>
+  </ol>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="col-1 offset-11 justify-content-end">
+        <button class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div>&nbsp;</div>
+  </div>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>Word List
+        </div>
+        <div class="card-body">
+          
+          <div class="row">
+            <form method="get">
+              <div class="row mb-3 justify-content-end">
+                <label for="word_group" class="col-form-label col-sm-1 text-end">Word Group</label>
+                <div class="col-sm-3">
+                  <select name="word_group" id="word_group" class="form-control form-select">
+                    <option value="all">Select</option>
+                    {% for word_group in word_groups %}
+                      {% if (selected_word_group | int == word_group.word_length | int) %}
+                        <option value="{{word_group.word_length}}" selected>LENGTH - ({{word_group.word_length}}) : COUNT - ({{word_group.word_count}})</option>
+                      {% else %}
+                        <option value="{{word_group.word_length}}">LENGTH - ({{word_group.word_length}}) : COUNT - ({{word_group.word_count}})</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="row mb-3 justify-content-end">
+                <div class="col-sm-1">
+                  <button type="submit" class="btn-danger btn btn-sm col-form-label" role="button">Search</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="row">
+            <table class="table table-hover table-bordered table-condensed">
+              <thead>
+                <th>Word</th>
+                <th>Length</th>
+              </thead>
+              <tbody>
+                {% for word in word_list %}
+                <tr>
+                  <td>{{word.word}}</td>
+                  <td>{{word.length}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="row">
+            {{ pagination_ctrl.render_pagination(word_list, "word_v1.word", selected_word_group) }}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
