@@ -1,0 +1,55 @@
+{% extends('partials/base.html') %}
+{% import 'word_tag/partials/pagination.html' as pagination_ctrl %}
+
+{% block content %}
+
+<div class="container-fluid px-4">
+  <h1 class="mt-4">Word Tags</h1>
+  <ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Word Tags</li>
+  </ol>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="col-1 offset-11 justify-content-end">
+        <button class="btn btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div>&nbsp;</div>
+  </div>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>Word Tag List
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <table class="table table-hover table-bordered table-condensed">
+              <thead>
+                <th>Word</th>
+                <th>Length</th>
+              </thead>
+              <tbody>
+                {% for word_tag in word_tag_list %}
+                <tr>
+                  <td>{{word_tag.tag}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="row">
+            {{ pagination_ctrl.render_pagination(
+              word_tag_list, "word_tag_v1.word_tag", word_id=word_id) }}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

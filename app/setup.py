@@ -21,6 +21,11 @@ def create_app():
     app.config.from_object(Config)
     db_manager = SQLAlchemy(app)
     migrate = Migrate(app, db_manager)
+    # with app.app_context():
+    #     db_manager.reflect()
+
+    
+    print(db_manager.metadatas)
     APP_CONFIG = {
         "app": app, "db_manager": db_manager, "migrate": migrate
     }

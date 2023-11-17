@@ -10,9 +10,12 @@ migrate = APP_SETTINGS['migrate']
 from app.v1.routes.words import bp as word_v1_bp
 from app.v1.routes.dashboard import bp as dashboard_v1_bp
 from app.v1.routes.tag import bp as tag_v1_bp
+from app.v1.routes.word_tag import bp as word_tag_v1_bp
+
 
 blueprint_mappings = (
     (word_v1_bp, '/word'),
+    (word_tag_v1_bp, '/word_tag'),
     (tag_v1_bp, '/tag'),
     (dashboard_v1_bp, '/'),
 )

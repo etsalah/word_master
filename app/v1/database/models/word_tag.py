@@ -17,12 +17,15 @@ class WordTag(db.Model):
     word_tag_id = db.Column("id", db.String(50), primary_key=True)
     tag_id = db.Column(db.String(50), nullable=False, index=True)
     word_id = db.Column(db.String(50), nullable=False, index=True)
+    description = db.Column(db.UnicodeText(), nullable=True)
     ver_id = db.Column(db.Integer(), nullable=False, default=0)
     date_created = db.Column(
         db.DateTime(), index=True, nullable=False, default=datetime.utcnow)
     __mapper_args__ = {"version_id_col": ver_id}
 
-    COLUMNS = ('word_tag_id', 'tag_id', 'word_id', 'date_created', 'ver_id')
+    COLUMNS = (
+        'word_tag_id', 'tag_id', 'word_id', 'date_created', 'ver_id',
+        'description')
 
 
     def to_dict(self):

@@ -56,12 +56,14 @@
               <thead>
                 <th>Word</th>
                 <th>Length</th>
+                <th>Operations</th>
               </thead>
               <tbody>
                 {% for word in word_list %}
                 <tr>
                   <td>{{word.word}}</td>
                   <td>{{word.length}}</td>
+                  <td><a href="{{ url_for('word_tag_v1.word_tag', word_id=word.word_id) }}" class="btn btn-sm btn-primary">View Tags</a></td>
                 </tr>
                 {% endfor %}
               </tbody>
