@@ -3,7 +3,7 @@ from app.setup import get_settings
 from flask import Blueprint, render_template, request, redirect, url_for
 
 from app.v1.database.models.word import Word
-from app.v1.database.views.word_length_group import ViewWordLengthGroup
+from app.v1.database.views.word_length_group import VwWordLengthGroup
 app_settings = get_settings()
 
 app = app_settings['app']
@@ -14,7 +14,7 @@ bp = Blueprint('word_v1', __name__, template_folder="templates")
 @bp.get('/')
 def word():
     word_group_length = request.args.get('word_group', None)
-    word_groups = db.session.execute(db.select(ViewWordLengthGroup.word_count, ViewWordLengthGroup.word_length)).all()
+    word_groups = db.session.execute(db.select(VwWordLengthGroup.word_count, VwWordLengthGroup.word_length)).all()
     if word_group_length and word_group_length != "all":
         try:
             word_group_length = int(word_group_length)

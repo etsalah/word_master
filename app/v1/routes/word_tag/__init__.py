@@ -6,8 +6,9 @@ from flask import render_template
 from app.v1.database.models.word_tag import WordTag
 from app.v1.database.models.word import Word
 from app.v1.database.models.tag import Tag
+from app.v1.database.views.word_tag_list import VwWordTagList
 
-from app.v1.routes.tag.forms.form import CreateForm, EditForm
+from app.v1.routes.word_tag.forms.form import CreateForm, EditForm
 from app.v1.helpers import id_helpers
 
 app_settings = get_settings()
@@ -21,23 +22,58 @@ bp = Blueprint('word_tag_v1', __name__, template_folder="templates")
 @bp.get('/<word_id>')
 @bp.get('/<word_id>/')
 def word_tag(word_id):
-    word_tag_list = db.paginate(
-        db.select(WordTag.word_tag_id, Tag.tag).join(
-            Tag, Tag.tag_id==WordTag.tag_id
-        ).filter(WordTag.word_id==word_id))
-    return render_template(
-        "word_tag/word_tag.html", word_id=word_id, word_tag_list=word_tag_list)
+    word_obj = db.session.execute(
+        db.Select(Word).filter(Word.word_id==word_id)
+    ).scalar()
 
+    if not word_obj:
+        flash(f"No word was found with id {word_id}", category="error")
+        return redirect(url_for("word_v1.word"))
+    
+    tag_list_stmt = db.select(VwWordTagList).filter(
+        VwWordTagList.word_id==word_id)
 
-@bp.route('/create/<word_id>', methods=['POST', 'GET'])
-@bp.route('/create/<word_id>/', methods=['POST', 'GET'])
-def create_word_tag():
+    word_tag_list = db.paginate(tag_list_stmt)
+
+    all_word_tags = db.session.execute(
+        db.Select(WordTag.tag_id).filter(WordTag.word_id==word_id)
+    ).scalars()
+
+    available_tag_select_stmt = db.Select(Tag).filter(
+        Tag.tag_id.notin_(all_word_tags))
+    available_tag_list = db.session.execute(
+        available_tag_select_stmt
+    ).scalars()
+
     form = CreateForm()
-    if request.method == "GET":
-        print("create form reached")
-        return render_template("word_tag/create.html", form=form)
-    elif request.method == "POST" and form.validate_on_submit():
-        word_tag = WordTag(word_tag_id=id_helpers.generate_id(), tag=form.tag.data)
+    return render_template(
+        "word_tag/word_tag.html", **{
+            "word_id": word_id, "word": word_obj,
+            "word_tag_list": word_tag_list,
+            "available_tag_list": available_tag_list,
+            "form": form,
+        })
+
+
+@bp.route('/create/<word_id>', methods=['POST', ])
+@bp.route('/create/<word_id>/', methods=['POST', ])
+def create_word_tag(word_id):
+    word_obj = db.session.execute(
+        db.Select(Word).filter(Word.word_id==word_id)
+    ).scalar()
+
+    if not word_obj:
+        flash(f"No word was found with id {word_id}", category="error")
+        return redirect(url_for("word_v1.word"))
+    
+    form = CreateForm()
+    if request.method == "POST" and form.validate_on_submit():
+        word_tag = WordTag(
+            word_tag_id=id_helpers.generate_id(),
+            word_id=word_id,
+            tag_id=str(form.tag_id.data).strip(),
+            description=str(form.description.data).strip()
+        )
         db.session.add(word_tag)
         try:
             db.session.commit()
@@ -48,15 +84,15 @@ def create_word_tag():
             flash(
                 "An error occurred will saving the tag. Kindly try again later",
                 category="error")
-        return redirect(url_for("word_tag_v1.create_word_tag"))
+        return redirect(url_for("word_tag_v1.word_tag", word_id=word_id))
     elif request.method == "POST" and not form.validate_on_submit():
         flash("\n".join(form.errors), category="error")
-        return redirect(url_for("word_tag_v1.create_word_tag"))
+        return redirect(url_for("word_tag_v1.word_tag", word_id=word_id))
 
     flash(
         f"`{request.method}` request aren't currently supported",
         category="error")
-    return redirect(url_for("word_tag_v1.word_tag"))
+    return redirect(url_for("word_tag_v1.word_tag", word_id=word_id))
 
 
 @bp.route('/<word_id>/<word_tag_id>/edit', methods=['GET', 'POST'])
@@ -69,7 +105,8 @@ def edit_word_tag(word_id, word_tag_id):
         return render_template(
             "word_tag/edit.html", form=form, word_tag_obj=word_tag_obj)
     elif request.method == "POST" and form.validate_on_submit():
-        word_tag_obj.tag = str(form.tag.data).strip()
+        word_tag_obj.tag_id = str(form.tag_id.data).strip()
+        word_tag_obj.description = str(form.description.data).strip()
         db.session.add(word_tag_obj)
         try:
             db.session.commit()
@@ -118,3 +155,32 @@ def view_word_tag(word_id, word_tag_id):
         return redirect(url_for("word_tag_v1.word_tag"))
     
     return render_template("word_tag/view.html", tag_obj=tag_obj)
+
+
+@bp.route("/<word_tag_id>/delete", methods=["GET", ])
+@bp.route("/<word_tag_id>/delete/", methods=["GET", ])
+def delete_word_tag(word_tag_id):
+    word_tag_obj = db.session.execute(
+        db.Select(WordTag).filter_by(word_tag_id=word_tag_id)
+    ).scalar_one()
+
+    if not word_tag_obj:
+        msg = "No word tag was found with the provide id"
+        flash(msg, category="info")
+        current_app.logger.error(f"{msg} `{word_tag_id}`")
+        return redirect(url_for("word_v1.word"))
+
+    db.session.delete(word_tag_obj)
+    try:
+        word_id = word_tag_obj.word_id
+        db.session.commit()
+        msg = "Word Tag has been delete successfully"
+        flash(msg, category="success")
+        current_app.logger.info(msg)
+        return redirect(url_for("word_tag_v1.word_tag", word_id=word_id))
+    except Exception as e:
+        db.session.rollback()
+        flash("An unexpected error, kindly try again later", category="error")
+        current_app.logger.info(e)
+        return redirect(url_for("word_tag_v1.word_tag", word_id=word_id))
+    

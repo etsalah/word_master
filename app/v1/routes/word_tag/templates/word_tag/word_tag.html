@@ -11,7 +11,7 @@
   <div class="row">
     <div class="container-fluid px-4">
       <div class="col-1 offset-11 justify-content-end">
-        <button class="btn btn-primary">Create</button>
+        <a href="{{ url_for('word_v1.word') }}" role="button" class="btn btn-primary">Back</a>
       </div>
     </div>
   </div>
@@ -19,33 +19,113 @@
     <div>&nbsp;</div>
   </div>
   <div class="row">
-    <div class="container-fluid px-4">
-      <div class="card mb-4">
+    {% include('partials/flash_message.html') %}
+  </div>
+
+  <!-- row 1 -->
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
         <div class="card-header">
-          <i class="fas fa-table me-1"></i>Word Tag List
+          <i class="fas fa-table me-1"></i>Current Tag List
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <table class="table table-hover table-bordered table-condensed">
+              <thead>
+                <th>Tag</th>
+                <th>Description</th>
+                <th>Operation</th>
+              </thead>
+              <tbody>
+                {% for word_tag in word_tag_list %}
+                <tr id="{{ word_tag.word_tag_id }}">
+                  <td>{{word_tag.tag}}</td>
+                  <td>{{word_tag.description}}</td>
+                  <td>
+                    <a href="{{ url_for('word_tag_v1.delete_word_tag', word_tag_id=word_tag.word_tag_id) }}" class="btn btn-danger btn-sm" role="button">delete</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row">
+            {{ pagination_ctrl.render_pagination(
+              word_tag_list, "word_tag_v1.word_tag", word_id=word_id) }}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>Word Details
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <label for="name" class="col-sm-4 col-form-label">Word</label>
+            <div class="col-sm-8">
+              <input type="text" name="name" class="form-control" value="{{word.word}}" readonly aria-readonly="true" />
+            </div>
+          </div>
+          <div class="row">&nbsp;</div>
+          <div class="row">
+            <label for="length" class="col-sm-4 col-form-label">Length</label>
+            <div class="col-sm-8">
+              <input type="text" name="length" class="form-control" value="{{word.length}}" readonly aria-readonly="true" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /row 1 -->
+
+  <div class="row">&nbsp;</div>
+
+  <!-- row 2 -->
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>Available Tags
         </div>
         <div class="card-body">
           <div class="row">
             <table class="table table-hover table-bordered table-condensed">
               <thead>
                 <th>Word</th>
-                <th>Length</th>
+                <th>Description</th>
               </thead>
               <tbody>
-                {% for word_tag in word_tag_list %}
-                <tr>
-                  <td>{{word_tag.tag}}</td>
-                </tr>
+                {% for available_tag in available_tag_list %}
+                  <tr>
+                    <td>{{available_tag.tag}}</td>
+                    <td>
+                      <form action="{{ url_for('word_tag_v1.create_word_tag', word_id=word.word_id) }}" method="post">
+                        {{ form.csrf_token }}
+                        <input type="hidden" name="tag_id" value="{{ available_tag.tag_id }}"/>
+                        <div class="row">
+                          <div class="col-10 justify-content-end">
+                            <textarea name="description" cols="120" rows="3"></textarea>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-1 offset-6 justify-content-end">
+                            <button type="submit" role="button" class="btn btn-primary btn-sm">Add</button>
+                          </div>
+                        </div>
+                      </form>
+                    </td>
+                  </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
-          
-          <div class="row">
-            {{ pagination_ctrl.render_pagination(
-              word_tag_list, "word_tag_v1.word_tag", word_id=word_id) }}
-          </div>
-
         </div>
       </div>
     </div>

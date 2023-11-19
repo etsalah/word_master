@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from app import db_manager as db, app
+from app import db_manager as db
 
 from app.v1.database.models.base import model_dict
 
 
-class ViewWordLengthGroup(db.Model):
+class VwWordLengthGroup(db.Model):
     __tablename__ = "vw_word_length_group"
     word_length = db.Column("word_length", db.Integer(), primary_key=True)
     word_count = db.Column("word_count", db.Integer())

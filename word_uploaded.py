@@ -27,7 +27,8 @@ def process_words(words):
             continue
         word_id = generate_id()
         worder_id = save_words({
-            'word': word_txt, 'length': len(word_txt), 'word_id': word_id
+            'word': word_txt.lower(), 'length': len(word_txt),
+            'word_id': word_id
         })
         # TODO: Add some other classifiers here
 
@@ -37,7 +38,7 @@ def save_words(word_details: Dict):
     with app.app_context():
         try:
             word_obj = Word(
-                id=word_id, word=word_details['word'], 
+                word_id=word_id, word=word_details['word'], 
                 length=word_details['length']
             )
             db.session.add(word_obj)
@@ -48,7 +49,7 @@ def save_words(word_details: Dict):
                 db.session, Word, [{'word': {'$eq': word_details['word']}}])
         
             if found_obj:
-                word_id = found_obj.id
+                word_id = found_obj.word_id
 
     return word_id
 
