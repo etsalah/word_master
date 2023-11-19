@@ -28,7 +28,7 @@ def create_tag():
         print("create form reached")
         return render_template("tag/create.html", form=form)
     elif request.method == "POST" and form.validate_on_submit():
-        tag = Tag(id=id_helpers.generate_id(), tag=form.tag.data)
+        tag = Tag(tag_id=id_helpers.generate_id(), tag=form.tag.data)
         db.session.add(tag)
         try:
             db.session.commit()
