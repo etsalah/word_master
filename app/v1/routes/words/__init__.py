@@ -9,7 +9,10 @@ app_settings = get_settings()
 app = app_settings['app']
 db = app_settings['db_manager']
 
-bp = Blueprint('word_v1', __name__, template_folder="templates")
+bp = Blueprint(
+    'word_v1', __name__, template_folder="templates",
+    static_folder="static")
+
 
 @bp.get('/')
 def word():

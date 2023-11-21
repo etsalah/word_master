@@ -55,6 +55,12 @@
           </div>
 
           <div class="row">
+            <div class="col-sm-4 offset-4 p-4" id="WordContainer">
+
+            </div>
+          </div>
+
+          <div class="row">
             <table class="table table-hover table-bordered table-condensed">
               <thead>
                 <th>Word</th>
@@ -66,7 +72,12 @@
                 <tr>
                   <td>{{word.word}}</td>
                   <td>{{word.length}}</td>
-                  <td><a href="{{ url_for('word_tag_v1.word_tag', word_id=word.word_id) }}" class="btn btn-sm btn-primary">View Tags</a></td>
+                  <td>
+                    <div class="btn-group" role="button" data-container="{{word.word_id}}$${{word.length}}$${{word.word}}">
+                      <a href="{{ url_for('word_tag_v1.word_tag', word_id=word.word_id) }}" class="btn btn-sm btn-primary">View Tags</a>
+                      <a href="#" class="btn btn-sm btn-danger add-button">Add</a>
+                    </div>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -84,3 +95,7 @@
 </div>
 
 {% endblock content %}
+
+{% block scripts %}
+<script src="{{url_for('word_v1.static', filename='js/word.js') }}"></script>
+{% endblock scripts %}
