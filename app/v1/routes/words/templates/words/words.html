@@ -28,7 +28,7 @@
           <i class="fas fa-table me-1"></i>Word List
         </div>
         <div class="card-body">
-          
+
           <div class="row">
             <form method="get">
               <div class="row mb-3 justify-content-end">
@@ -37,11 +37,13 @@
                   <select name="word_group" id="word_group" class="form-control form-select">
                     <option value="all">Select</option>
                     {% for word_group in word_groups %}
-                      {% if (selected_word_group | int == word_group.word_length | int) %}
-                        <option value="{{word_group.word_length}}" selected>LENGTH - ({{word_group.word_length}}) : COUNT - ({{word_group.word_count}})</option>
-                      {% else %}
-                        <option value="{{word_group.word_length}}">LENGTH - ({{word_group.word_length}}) : COUNT - ({{word_group.word_count}})</option>
-                      {% endif %}
+                    {% if (selected_word_group | int == word_group.word_length | int) %}
+                    <option value="{{word_group.word_length}}" selected>LENGTH - ({{word_group.word_length}}) : COUNT -
+                      ({{word_group.word_count}})</option>
+                    {% else %}
+                    <option value="{{word_group.word_length}}">LENGTH - ({{word_group.word_length}}) : COUNT -
+                      ({{word_group.word_count}})</option>
+                    {% endif %}
                     {% endfor %}
                   </select>
                 </div>
@@ -55,9 +57,17 @@
           </div>
 
           <div class="row">
-            <div class="col-sm-4 offset-4 p-4" id="WordContainer">
-
-            </div>
+            <form action="{{ url_for('word_tag_v1.bulk_word_tag', action='edit') }}" method="POST">
+              {{ form.csrf_token() }}
+              <input type="hidden" name="choosen_words" id="choosen_words" />
+              <div class="col-sm-4 offset-4 p-4" id="WordContainer"></div>
+              <div class="col-sm-4 offset-6 p-4"> 
+                <div class="btn-group">
+                  <button type="button" class="btn-sm btn btn-danger" id="clear_choosen_words" name="clear_choosen_words">Clear</button>
+                  <button role="button" class="btn btn-primary btn-sm" type="submit">Edit Tags</button>
+                </div>
+              </div> 
+            </form>
           </div>
 
           <div class="row">
@@ -73,8 +83,10 @@
                   <td>{{word.word}}</td>
                   <td>{{word.length}}</td>
                   <td>
-                    <div class="btn-group" role="button" data-container="{{word.word_id}}$${{word.length}}$${{word.word}}">
-                      <a href="{{ url_for('word_tag_v1.word_tag', word_id=word.word_id) }}" class="btn btn-sm btn-primary">View Tags</a>
+                    <div class="btn-group" role="button"
+                      data-container="{{word.word_id}}$${{word.length}}$${{word.word}}">
+                      <a href="{{ url_for('word_tag_v1.word_tag', word_id=word.word_id) }}"
+                        class="btn btn-sm btn-primary">View Tags</a>
                       <a href="#" class="btn btn-sm btn-danger add-button">Add</a>
                     </div>
                   </td>
@@ -83,7 +95,7 @@
               </tbody>
             </table>
           </div>
-          
+
           <div class="row">
             {{ pagination_ctrl.render_pagination(word_list, "word_v1.word", selected_word_group) }}
           </div>

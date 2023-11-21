@@ -8,7 +8,7 @@ from app.v1.database.models.word import Word
 from app.v1.database.models.tag import Tag
 from app.v1.database.views.word_tag_list import VwWordTagList
 
-from app.v1.routes.word_tag.forms.form import CreateForm, EditForm
+from app.v1.routes.word_tag.forms.form import CreateForm, EditForm, BulkForm
 from app.v1.helpers import id_helpers
 
 app_settings = get_settings()
@@ -53,6 +53,38 @@ def word_tag(word_id):
             "available_tag_list": available_tag_list,
             "form": form,
         })
+
+
+@bp.route('/create/<action>', methods=['POST', ])
+@bp.route('/create/<action>/', methods=['POST', ])
+def bulk_word_tag(action):
+    form = BulkForm()
+    if request.method == "POST" and action == "edit" and form.validate_on_submit():
+        choosen_words_str = form.choosen_words.data.strip()
+        choosen_words_lst = [
+            choosen_word.split("$$")
+            for choosen_word in choosen_words_str.split(",")
+        ]
+        
+        word_tag_list = db.session.execute(db.select(Tag.tag_id, Tag.tag)).all()
+
+        return render_template(
+            "word_tag/bulk_word_tag.html", **{
+                "choosen_words_str": choosen_words_str,
+                "choosen_words": choosen_words_lst,
+                'available_tag_list': word_tag_list,
+                'form': form,
+            })
+    elif request.method == "POST" and not form.validate_on_submit():
+        flash("You need to select some words to tag", category="info")
+        return redirect(url_for("word_v1.word"))
+    elif request.method == "POST" and action == "create" and form.validate_on_submit():
+        pass
+
+    flash(
+        f"The `{request.method}` method is currently not supported",
+        category="error")
+    return redirect(url_for("word_v1.word"))
 
 
 @bp.route('/create/<word_id>', methods=['POST', ])

@@ -34,3 +34,14 @@ class EditForm(FlaskForm):
                 "You need to provide the name of the tag you want to create"),
         ]
     )
+
+
+class BulkForm(FlaskForm):
+    choosen_words = StringField(
+        "choosen_words", validators=[
+            DataRequired(
+                "You need to provide a list of choosen words that need to "
+                "be tagged"
+            ),
+        ]
+    )

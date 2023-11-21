@@ -1,0 +1,91 @@
+{% extends('partials/base.html') %}
+{% import 'word_tag/partials/pagination.html' as pagination_ctrl %}
+
+{% block content %}
+
+<div class="container-fluid px-4">
+  <h1 class="mt-4">Word Tags</h1>
+  <ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Word Tags</li>
+  </ol>
+  <div class="row">
+    <div class="container-fluid px-4">
+      <div class="col-1 offset-11 justify-content-end">
+        <a href="{{ url_for('word_v1.word') }}" role="button" class="btn btn-primary">Back</a>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div>&nbsp;</div>
+  </div>
+  <div class="row">
+    {% include('partials/flash_message.html') %}
+  </div>
+
+  <div class="row">&nbsp;</div>
+
+  <!-- row 1 -->
+
+  <div class="row">
+    <div class="col-sm-4 offset-4 p-2">
+      {% for choosen_word in choosen_words %}
+      {% if loop.index % 2 == 0 %}
+      {% set cls = "bg-secondary" %}
+      {% else %}
+      {% set cls = "bg-primary" %}
+      {% endif %}
+      <span class="badge {{cls}} m-1">{{ choosen_word[2] }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- /row 1 -->
+
+  <!-- row 2 -->
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>Available Tags
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <table class="table table-hover table-bordered table-condensed">
+              <thead>
+                <th>Tag</th>
+                <th>Description</th>
+              </thead>
+              <tbody>
+                {% for available_tag in available_tag_list %}
+                  <tr>
+                    <td>{{available_tag.tag}}</td>
+                    <td>
+                      <form action="{{ url_for('word_tag_v1.bulk_word_tag', action='create') }}" method="post">
+                        {{ form.csrf_token }}
+                        <input type="hidden" name="tag_id" value="{{ available_tag.tag_id }}"/>
+                        <input type="hidden" name="choosen_words_str" value="{{choosen_words_str}}">
+                        <div class="row">
+                          <div class="col-10 justify-content-end">
+                            <textarea name="description" cols="120" rows="3"></textarea>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-1 offset-6 justify-content-end">
+                            <button type="submit" role="button" class="btn btn-primary btn-sm">Add</button>
+                          </div>
+                        </div>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /row 2 -->
+
+</div>
+
+{% endblock content %}

@@ -1,6 +1,8 @@
 
 var addBtnCtrls = document.getElementsByClassName("add-button"),
-    buildWordContainer = document.getElementById("WordContainer");
+    buildWordContainer = document.getElementById("WordContainer"),
+    choosenWordsCtrl = document.getElementById("choosen_words"),
+    clearChoosenWordBtn = document.getElementById("clear_choosen_words");
 
 var getSelectedWords = function() {
     return localStorage.getItem("selectedWords");
@@ -41,6 +43,13 @@ var addWordCards = function(wordContainerCtrl, selectedWords) {
 };
 
 
+var setChoosenWords = function(choosenWordsCtrlRef, selectedWords) {
+    if (choosenWordsCtrlRef === null || choosenWordsCtrlRef === undefined) {
+        console.log("Choosen Word control reference is invalid");
+    }
+    choosenWordsCtrlRef.value = selectedWords;
+};
+
 localStorage.removeItem("selectedWords");
 
 
@@ -55,8 +64,16 @@ for(var i = 0, len = addBtnCtrls.length; i < len; i++) {
         
         if (result) {
             addWordCards(buildWordContainer, getSelectedWords());
+            setChoosenWords(choosenWordsCtrl, getSelectedWords());
         }
 
     });
 
 };
+
+clearChoosenWordBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+    localStorage.removeItem("selectedWords");
+    choosenWordsCtrl.value = "";
+    buildWordContainer.innerHTML = "";
+});
