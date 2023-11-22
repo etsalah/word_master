@@ -1,7 +1,8 @@
-from app.setup import get_settings
-
+from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, request, flash, redirect, url_for, current_app
 from flask import render_template
+
+from app.setup import get_settings
 
 from app.v1.database.models.word_tag import WordTag
 from app.v1.database.models.word import Word
@@ -59,28 +60,82 @@ def word_tag(word_id):
 @bp.route('/create/<action>/', methods=['POST', ])
 def bulk_word_tag(action):
     form = BulkForm()
-    if request.method == "POST" and action == "edit" and form.validate_on_submit():
+    print(
+        f"bulk {action}",
+        form.choosen_words.data,
+        form.description.data, form.tag_id.data, form.errors)
+    if request.method == "POST" and action == "edit":
         choosen_words_str = form.choosen_words.data.strip()
         choosen_words_lst = [
             choosen_word.split("$$")
             for choosen_word in choosen_words_str.split(",")
         ]
         
-        word_tag_list = db.session.execute(db.select(Tag.tag_id, Tag.tag)).all()
+        word_ids = [choosen_word[0] for choosen_word in choosen_words_lst]
+
+        # all_word_tags = db.session.execute(
+        #     db.Select(WordTag.tag_id).filter(WordTag.word_id.notin_(word_ids))
+        # ).scalars()
+
+        # available_tag_select_stmt = db.Select(Tag).filter(
+        #     Tag.tag_id.notin_(all_word_tags))
+        # available_tag_list = db.session.execute(
+        #     available_tag_select_stmt
+        # ).scalars()
+
+        stmt = db.Select(
+            WordTag.tag_id, WordTag.word_tag_id, Tag.tag, Tag.tag_id
+        ).join(
+            Tag, Tag.tag_id==WordTag.tag_id
+        ).filter(
+            WordTag.word_id.in_(word_ids)
+        )
+        
+        common_tags_ls = db.session.execute(stmt).all()
+        common_tags_set = set()
+        for comm in common_tags_ls:
+            common_tags_set.add(comm.tag)
+
+        available_tag_list = db.session.execute(
+            db.Select(Tag)
+        ).scalars()
 
         return render_template(
             "word_tag/bulk_word_tag.html", **{
                 "choosen_words_str": choosen_words_str,
                 "choosen_words": choosen_words_lst,
-                'available_tag_list': word_tag_list,
-                'form': form,
+                "available_tag_list": available_tag_list,
+                "common_tags": common_tags_set,
+                "form": form,
             })
-    elif request.method == "POST" and not form.validate_on_submit():
-        flash("You need to select some words to tag", category="info")
-        return redirect(url_for("word_v1.word"))
     elif request.method == "POST" and action == "create" and form.validate_on_submit():
-        pass
+        choosen_words_str = form.choosen_words.data.strip()
+        choosen_words_lst = [
+            choosen_word.split("$$")
+            for choosen_word in choosen_words_str.split(",")
+        ]
+        words = []
+        for choosen_word in choosen_words_lst:    
+            word_tag_obj = WordTag(
+                word_tag_id=id_helpers.generate_id(), word_id=choosen_word[0],
+                tag_id=form.tag_id.data.strip(),
+                description=form.description.data.strip()
+            )
+            db.session.add(word_tag_obj)
+            words.append(choosen_word[2])
+            try:
+                db.session.commit()
+            except IntegrityError as e:
+                db.session.rollback()
+            except Exception as e:
+                current_app.logger.error(e)
 
+        flash(
+            f"Tag has been applied to {', '.join(words)}, successfully",
+            category="success")
+        return redirect(url_for("word_v1.word"))
+    elif request.method == "POST" and action == "create" and not form.validate_on_submit():
+        flash(",".join(form.errors), category="error")
     flash(
         f"The `{request.method}` method is currently not supported",
         category="error")

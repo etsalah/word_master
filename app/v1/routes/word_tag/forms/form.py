@@ -45,3 +45,16 @@ class BulkForm(FlaskForm):
             ),
         ]
     )
+    tag_id = StringField(
+        "tag_id", validators=[
+            DataRequired(
+                "You need to provide the id of the tag you want to add to "
+                "the words"
+            ),
+        ]
+    )
+    description = StringField(
+        "description", validators=[
+            DataRequired("Provide a description for the tag you are adding")
+        ]
+    )

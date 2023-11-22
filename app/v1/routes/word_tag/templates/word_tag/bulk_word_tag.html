@@ -27,7 +27,7 @@
   <!-- row 1 -->
 
   <div class="row">
-    <div class="col-sm-4 offset-4 p-2">
+    <div class="col-sm-4 p-2">
       {% for choosen_word in choosen_words %}
       {% if loop.index % 2 == 0 %}
       {% set cls = "bg-secondary" %}
@@ -42,7 +42,9 @@
 
   <!-- row 2 -->
   <div class="row">
-    <div class="col-sm-12">
+
+    <!-- column 1 -->
+    <div class="col-sm-8">
       <div class="card">
         <div class="card-header">
           <i class="fas fa-table me-1"></i>Available Tags
@@ -56,16 +58,18 @@
               </thead>
               <tbody>
                 {% for available_tag in available_tag_list %}
+
+                {% if available_tag.tag not in common_tags %}
                   <tr>
                     <td>{{available_tag.tag}}</td>
                     <td>
                       <form action="{{ url_for('word_tag_v1.bulk_word_tag', action='create') }}" method="post">
                         {{ form.csrf_token }}
                         <input type="hidden" name="tag_id" value="{{ available_tag.tag_id }}"/>
-                        <input type="hidden" name="choosen_words_str" value="{{choosen_words_str}}">
+                        <input type="hidden" name="choosen_words" value="{{choosen_words_str}}">
                         <div class="row">
-                          <div class="col-10 justify-content-end">
-                            <textarea name="description" cols="120" rows="3"></textarea>
+                          <div class="col-10 justify-content-center">
+                            <textarea name="description" class="col-12" cols="*" rows="3"></textarea>
                           </div>
                         </div>
                         <div class="row">
@@ -76,6 +80,8 @@
                       </form>
                     </td>
                   </tr>
+
+                {% endif %}
                 {% endfor %}
               </tbody>
             </table>
@@ -83,6 +89,33 @@
         </div>
       </div>
     </div>
+    <!-- /column 1 -->
+
+    <!-- column 2 -->
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-table me-1"></i>Shared Tags
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <table class="table table-hover table-bordered table-condensed">
+              <thead>
+                <th>Common Tags</th>
+              </thead>
+              <tbody>
+                {% for common_tag in common_tags %}
+                <tr>
+                  <td>{{ common_tag }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /column 2 -->
   </div>
   <!-- /row 2 -->
 
