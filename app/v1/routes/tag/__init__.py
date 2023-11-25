@@ -25,7 +25,6 @@ def tag():
 def create_tag():
     form = CreateForm()
     if request.method == "GET":
-        print("create form reached")
         return render_template("tag/create.html", form=form)
     elif request.method == "POST" and form.validate_on_submit():
         tag = Tag(tag_id=id_helpers.generate_id(), tag=form.tag.data)

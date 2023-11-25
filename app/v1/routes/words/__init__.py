@@ -39,7 +39,6 @@ def word():
             "selected_word_group": word_group_length,
             "word_groups": word_groups, "word_page": page
         }
-        print(context)
         return render_template("words/words.html", **context)
     else:
         word_list = db.paginate(db.select(Word))
@@ -48,5 +47,4 @@ def word():
             "selected_word_group": word_group_length,
             "word_groups": word_groups, "word_page": page
         }
-        print(context)
         return render_template("words/words.html", **context)
