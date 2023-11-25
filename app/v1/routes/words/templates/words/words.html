@@ -85,7 +85,16 @@
                   <td>
                     <div class="btn-group" role="button"
                       data-container="{{word.word_id}}$${{word.length}}$${{word.word}}">
-                      <a href="{{ url_for('word_tag_v1.word_tag', word_id=word.word_id) }}"
+                      {% if selected_word_group and word_page %}
+                      {% set view_url = url_for('word_tag_v1.word_tag', word_id=word.word_id, word_group=selected_word_group, word_page=word_page) %}
+                      {% elif not selected_word_group and word_page %}
+                      {% set view_url = url_for('word_tag_v1.word_tag', word_id=word.word_id, word_page=word_page) %}
+                      {% elif selected_word_group and not word_page %}
+                      {% set view_url = url_for('word_tag_v1.word_tag', word_id=word.word_id, word_group=selected_word_group) %}
+                      {% else %}
+                      {% set view_url = url_for('word_tag_v1.word_tag', word_id=word.word_id) %}
+                      {% endif %}
+                      <a href="{{ view_url }}"
                         class="btn btn-sm btn-primary">View Tags</a>
                       <a href="#" class="btn btn-sm btn-danger add-button">Add</a>
                     </div>

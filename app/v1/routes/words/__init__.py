@@ -22,6 +22,7 @@ def word():
     word_groups = db.session.execute(
         db.select(VwWordLengthGroup.word_count, VwWordLengthGroup.word_length)
     ).all()
+    page = request.args.get('page', None)
     form = BulkForm()
     if word_group_length and word_group_length != "all":
         try:
@@ -33,11 +34,19 @@ def word():
             db.select(Word).filter(
                 Word.length==int(word_group_length)
             ).order_by(Word.length.asc(), Word.word.asc()))
-        return render_template(
-            "words/words.html", word_list=word_list, form=form,
-            selected_word_group=word_group_length, word_groups=word_groups)
+        context = {
+            "word_list": word_list, "form": form,
+            "selected_word_group": word_group_length,
+            "word_groups": word_groups, "word_page": page
+        }
+        print(context)
+        return render_template("words/words.html", **context)
     else:
         word_list = db.paginate(db.select(Word))
-        return render_template(
-            "words/words.html", word_list=word_list, selected_word_group=None,
-            word_groups=word_groups, form=form)
+        context = {
+            "word_list": word_list, "form": form,
+            "selected_word_group": word_group_length,
+            "word_groups": word_groups, "word_page": page
+        }
+        print(context)
+        return render_template("words/words.html", **context)

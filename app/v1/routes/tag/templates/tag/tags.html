@@ -1,5 +1,5 @@
 {% extends('partials/base.html') %}
-
+{% import 'tag/partials/pagination.html' as pagination_ctrl %}
 {% block content %}
 
 <div class="container-fluid px-4">
@@ -22,30 +22,40 @@
   </div>
   <div class="row">
     <div class="container-fluid px-4">
-      <div class="card col-sm-4">
+      <div class="card col-sm-8">
         <div class="card-header">
           <i class="fas fa-table me-1"></i>Tag List
         </div>
         <div class="card-body">
-          <table class="table table-hover table-bordered table-condensed">
-            <thead>
-              <th>Tag</th>
-              <th>Operation</th>
-            </thead>
-            <tbody>
-              {% for tag in tag_list %}
-              <tr>
-                <td>{{tag.tag}}</td>
-                <td>
-                  <div class="btn-group">
-                    <a href="{{ url_for('tag_v1.edit_tag', tag_id=tag.tag_id) }}" class="btn btn-danger btn-sm">Edit</a>
-                    <a href="{{ url_for('tag_v1.view_tag', tag_id=tag.tag_id) }}" class="btn btn-primary btn-sm">View</a>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+
+          <div class="row">
+            <table class="table table-hover table-bordered table-condensed">
+              <thead>
+                <th>Tag</th>
+                <th>Operation</th>
+              </thead>
+              <tbody>
+                {% for tag in tag_list %}
+                <tr>
+                  <td>{{tag.tag}}</td>
+                  <td>
+                    <div class="btn-group">
+                      <a href="{{ url_for('tag_v1.edit_tag', tag_id=tag.tag_id) }}"
+                        class="btn btn-danger btn-sm">Edit</a>
+                      <a href="{{ url_for('tag_v1.view_tag', tag_id=tag.tag_id) }}"
+                        class="btn btn-primary btn-sm">View</a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row">
+            {{ pagination_ctrl.render_pagination(tag_list, "tag_v1.tag") }}
+          </div>
+
         </div>
       </div>
     </div>

@@ -1,0 +1,31 @@
+{% macro render_pagination(pagination, endpoint) %}
+  <div class="row">
+    <div class="col-sm-2">
+      <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group me-2" role="group" aria-label="First group">
+          <button type="button" class="btn">{{ pagination.first }} - {{ pagination.last }} of {{ pagination.total }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-2 offset-7">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {% for page in pagination.iter_pages() %}
+            {% if page %}
+              <li class="page-item">
+                {% if page != pagination.page %}
+                  <a class="page-link" href="{{ url_for(endpoint, page=page) }}">{{ page }}</a>
+                {% else %}
+                  <strong><a href="#" class="page-link">{{page}}</a></strong>
+                {% endif %}
+              </li>
+            {% else %}
+              <strong>...</strong>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+{% endmacro %}
