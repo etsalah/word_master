@@ -1,4 +1,5 @@
 {% extends('partials/base.html') %}
+{% import 'tag/partials/pagination.html' as pagination_ctrl %}
 
 {% block content %}
 
@@ -27,18 +28,63 @@
           <!-- <i class="fas fa-table me-1"></i>Tag List -->
         </div>
         <div class="card-body">
-          <form action="{{ url_for('tag_v1.create_tag') }}" method="POST">
-            <div class="row">
-              <label for="tag" class="col-form-label text-end col-sm-2">Name</label>
-              <div class="col-sm-10">
-                <input type="text" name="tag" id="tag" class="form-control" value="{{tag_obj.tag}}" readonly />
+
+          <div class="row">
+            <form action="{{ url_for('tag_v1.create_tag') }}" method="POST">
+              <div class="row">
+                <label for="tag" class="col-form-label text-end col-sm-2">Name</label>
+                <div class="col-sm-10">
+                  <input type="text" name="tag" id="tag" class="form-control" value="{{tag_obj.tag}}" readonly />
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
+
       </div>
     </div>
   </div>
+
+  <div class="row">&nbsp;</div>
+
+  <div class="row">
+
+    <div class="container-fluid px-4">
+
+      <div class="card col-12">
+        <div class="card-header">
+        </div>
+        <div class="card-body">
+
+          <div class="row">
+            <table class="table table-hover table-bordered table-condensed">
+              <thead>
+                <th>Word</th>
+                <th>Description</th>
+              </thead>
+              <tbody>
+                {% for tag_word in tag_word_list %}
+                <tr>
+                  <td>{{tag_word.word}}</td>
+                  <td>{{tag_word.description}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row">
+            {{ pagination_ctrl.render_pagination(tag_word_list, "tag_v1.view_tag", tag_id=tag_id) }}
+          </div>
+       
+        </div>
+      
+      </div>
+    
+    </div>
+  
+  </div>
+
 </div>
 
 {% endblock content %}

@@ -1,4 +1,4 @@
-{% macro render_pagination(pagination, endpoint) %}
+{% macro render_pagination(pagination, endpoint, tag_id=None) %}
   <div class="row">
     <div class="col-sm-2">
       <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
@@ -14,8 +14,10 @@
           {% for page in pagination.iter_pages() %}
             {% if page %}
               <li class="page-item">
-                {% if page != pagination.page %}
-                  <a class="page-link" href="{{ url_for(endpoint, page=page) }}">{{ page }}</a>
+                {% if page != pagination.page and not tag_id %}
+                <a class="page-link" href="{{ url_for(endpoint, page=page) }}">{{ page }}</a>
+                {% elif page != pagination.page and tag_id %}
+                  <a class="page-link" href="{{ url_for(endpoint, page=page, tag_id=tag_id) }}">{{ page }}</a>
                 {% else %}
                   <strong><a href="#" class="page-link">{{page}}</a></strong>
                 {% endif %}

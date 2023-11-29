@@ -4,6 +4,9 @@ from flask import Blueprint, request, flash, redirect, url_for, current_app
 from flask import render_template
 
 from app.v1.database.models.tag import Tag
+from app.v1.database.models.word import Word
+from app.v1.database.views.tag_word_list import VwTagWordList
+from app.v1.database.models.word_tag import WordTag
 from app.v1.routes.tag.forms.form import CreateForm, EditForm
 from app.v1.helpers import id_helpers
 
@@ -95,4 +98,11 @@ def view_tag(tag_id):
         current_app.logger.error(f"{msg} `{tag_id}`")
         return redirect(url_for("tag_v1.tag"))
     
-    return render_template("tag/view.html", tag_obj=tag_obj)
+    tag_word_list = db.paginate(
+        db.select(VwTagWordList).filter(
+            VwTagWordList.tag_id==tag_obj.tag_id))
+    return render_template(
+        "tag/view.html", **{
+            'tag_obj':tag_obj, 'tag_word_list': tag_word_list,
+            'tag_id': tag_id
+        })

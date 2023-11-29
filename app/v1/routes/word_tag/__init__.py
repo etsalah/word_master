@@ -22,6 +22,8 @@ db = app_settings['db_manager']
 bp = Blueprint('word_tag_v1', __name__, template_folder="templates")
 
 
+@bp.get('/<word_id>')
+@bp.get('/<word_id>/')
 @bp.get('/<word_id>/<word_group>')
 @bp.get('/<word_id>/<word_group>/')
 @bp.get('/<word_id>/<word_page>')
