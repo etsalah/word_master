@@ -55,10 +55,8 @@ def word_tag(word_id, word_page=None, word_group=None):
 
     form = CreateForm()
     template_context = {
-        "word_id": word_id, "word": word_obj,
-        "word_tag_list": word_tag_list,
-        "available_tag_list": available_tag_list,
-        "form": form,
+        "word_id": word_id, "word": word_obj,  "word_tag_list": word_tag_list,
+        "available_tag_list": available_tag_list, "form": form
     }
 
     if word_group:
@@ -72,9 +70,16 @@ def word_tag(word_id, word_page=None, word_group=None):
 
 @bp.route('/create/<action>/bulk', methods=['POST', ])
 @bp.route('/create/<action>/bulk/', methods=['POST', ])
-def bulk_word_tag(action):
+@bp.route('/create/<action>/bulk/<word_page>', methods=['POST', ])
+@bp.route('/create/<action>/bulk/<word_page>/', methods=['POST', ])
+@bp.route('/create/<action>/bulk/<word_page>/<word_group>', methods=['POST', ])
+@bp.route('/create/<action>/bulk/<word_page>/<word_group>', methods=['POST', ])
+@bp.route('/create/<action>/bulk/<word_page>/<word_group>/', methods=['POST', ])
+def bulk_word_tag(action, word_page=None, word_group=None):
     form = BulkForm()
     
+    word_group = request.args.get('word_group', None) if not word_group else word_group
+
     if request.method == "POST" and action == "edit":
         choosen_words_str = form.choosen_words.data.strip()
         choosen_words_lst = word_tag_helper.process_choosen_word_str(
@@ -87,14 +92,15 @@ def bulk_word_tag(action):
             db.Select(Tag)
         ).scalars()
 
+        template_context = {
+            "choosen_words_str": choosen_words_str,
+            "choosen_words": choosen_words_lst,
+            "available_tag_list": available_tag_list,
+            "common_tags": common_tags_set, "form": form,
+            "word_page": word_page, "word_group": word_group
+        }
         return render_template(
-            "word_tag/bulk_word_tag.html", **{
-                "choosen_words_str": choosen_words_str,
-                "choosen_words": choosen_words_lst,
-                "available_tag_list": available_tag_list,
-                "common_tags": common_tags_set,
-                "form": form,
-            })
+            "word_tag/bulk_word_tag.html", **template_context)
     elif request.method == "POST" and action == "create" and form.validate_on_submit():
         choosen_words_str = form.choosen_words.data.strip()
         choosen_words_lst = word_tag_helper.process_choosen_word_str(
@@ -122,22 +128,48 @@ def bulk_word_tag(action):
         available_tag_list = word_tag_helper.get_available_tags(db)
         common_tags_set = word_tag_helper.get_common_tag_lst(
             db, choosen_words_lst)
-        
+        template_context = {
+            "choosen_words_str": choosen_words_str,
+            "choosen_words": choosen_words_lst,
+            "available_tag_list": available_tag_list,
+            "common_tags": common_tags_set, "form": form,
+            "word_page": word_page, "word_group": word_group
+        }
         return render_template(
-            "word_tag/bulk_word_tag.html", **{
-                "choosen_words_str": choosen_words_str,
-                "choosen_words": choosen_words_lst,
-                "available_tag_list": available_tag_list,
-                "common_tags": common_tags_set,
-                "form": form,
-            })
+            "word_tag/bulk_word_tag.html", **template_context)
     
     elif request.method == "POST" and action == "create" and not form.validate_on_submit():
         flash(",".join(form.errors), category="error")
+        choosen_words_str = form.choosen_words.data.strip()
+        choosen_words_lst = word_tag_helper.process_choosen_word_str(
+            choosen_words_str)
+        available_tag_list = word_tag_helper.get_available_tags(db)
+        common_tags_set = word_tag_helper.get_common_tag_lst(
+            db, choosen_words_lst)
+        template_context = {
+            "choosen_words_str": choosen_words_str,
+            "choosen_words": choosen_words_lst,
+            "available_tag_list": available_tag_list,
+            "common_tags": common_tags_set, "form": form,
+            "word_page": word_page, "word_group": word_group
+        }
+        return render_template(
+            "word_tag/bulk_word_tag.html", **template_context)
+    
     flash(
         f"The `{request.method}` method is currently not supported",
         category="error")
+    
+    if word_page and word_group:
+        return redirect(
+            url_for("word_v1.word", word_page=word_page, word_group=word_group))
+    elif word_page and not word_group:
+        return redirect(url_for("word_v1.word", word_page=word_page))
+    elif not word_page and word_group:
+        return redirect(url_for("word_v1.word", word_group=word_group))
+
     return redirect(url_for("word_v1.word"))
+
 
 
 @bp.route('/create/<word_id>', methods=['POST', ])

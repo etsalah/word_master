@@ -57,7 +57,16 @@
           </div>
 
           <div class="row">
-            <form action="{{ url_for('word_tag_v1.bulk_word_tag', action='edit') }}" method="POST">
+            {% if word_page and selected_word_group %}
+            {% set edit_url = url_for('word_tag_v1.bulk_word_tag', action='edit', word_page=word_page, word_group=selected_word_group) %}
+            {% elif word_page and not selected_word_group %}
+            {% set edit_url = url_for('word_tag_v1.bulk_word_tag', action='edit', word_page=word_page) %}
+            {% elif not word_page and selected_word_group %}
+            {% set edit_url = url_for('word_tag_v1.bulk_word_tag', action='edit', word_group=selected_word_group) %}
+            {% elif not word_page and not selected_word_group %}
+            {% set edit_url = url_for('word_tag_v1.bulk_word_tag', action='edit') %}
+            {% endif %}
+            <form action="{{ edit_url }}" method="POST">
               {{ form.csrf_token() }}
               <input type="hidden" name="choosen_words" id="choosen_words" />
               <div class="col-sm-4 offset-4 p-4" id="WordContainer"></div>

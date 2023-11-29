@@ -11,7 +11,16 @@
   <div class="row">
     <div class="container-fluid px-4">
       <div class="col-1 offset-11 justify-content-end">
-        <a href="{{ url_for('word_v1.word') }}" role="button" class="btn btn-primary">Back</a>
+        {% if word_page and word_group %}
+        {% set back_url = url_for('word_v1.word', page=word_page, word_group=word_group) %}
+        {% elif not page and word_group %}
+        {% set back_url = url_for('word_v1.word', word_group=word_group) %}
+        {% elif page and not word_group %}
+        {% set back_url = url_for('word_v1.word', page=word_page) %}
+        {% elif not page and not word_group %}
+        {% set back_url = url_for('word_v1.word') %}
+        {% endif %}
+        <a href="{{ back_url }}" role="button" class="btn btn-primary">Back</a>
       </div>
     </div>
   </div>
