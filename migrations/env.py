@@ -34,7 +34,8 @@ target_metadata = current_app.extensions['migrate'].db.metadata
 
 def include_objects(object, name, type_, reflected, compare_to):
     if type_ == 'table' and name in (
-            'vw_word_length_group', 'vw_tags_word_list', 'vw_word_tag_list'):
+            'vw_word_length_group', 'vw_tags_word_list', 'vw_word_tag_list',
+            'vw_tag_word_count', ):
         return False
 
     return True
