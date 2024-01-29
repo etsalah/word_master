@@ -12,7 +12,16 @@
   <div class="row">
     {% for word in word_grouping %}
     <div class="col-xl-3 col-md-6">
-      <div class="card {% if loop.index % 2 == 0 'bg-primary' else 'bg-success' %}text-white mb-4">
+      {% if loop.index == 1 %}
+      {% set cls = "bg-success" %}
+      {% elif loop.index == 2 %}
+      {% set cls = "bg-warning" %}
+      {% elif loop.index == 3 %}
+      {% set cls = "bg-danger" %}
+      {% else %}
+      {% set cls = "bg-primary" %}
+      {% endif %}
+      <div class="card {{cls}} text-white mb-4">
         <div class="card-body">{{word.tag}}</div>
         <div class="card-footer d-flex align-items-center justify-content-between">
           <div class="small text-white">word count = {{word.word_count}}</div>
